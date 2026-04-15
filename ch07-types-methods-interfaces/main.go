@@ -1,7 +1,8 @@
 package main
 
 import (
-	"fmt"
+	"io"
+	"os"
 	"sort"
 )
 
@@ -14,6 +15,28 @@ type League struct {
 	Name  string
 	Teams map[string]Team
 	Wins  map[string]int
+}
+
+type Ranker interface {
+	Ranking() []string
+}
+
+func RankPrinter(r Ranker, iw io.Writer) {
+	for _, v := range r.Ranking() {
+
+		_, err := io.WriteString(iw, v)
+
+		if err != nil {
+			return
+		}
+
+		_, err = io.WriteString(iw, "\n")
+
+		if err != nil {
+			return
+		}
+	}
+
 }
 
 func (l *League) MatchResult(firstTeam string, fTeamScore int,
@@ -78,6 +101,8 @@ func main() {
 	l.MatchResult("France", 100, "Nigeria", 110)
 	l.MatchResult("Italy", 65, "Nigeria", 70)
 	l.MatchResult("France", 95, "India", 80)
-	results := l.Ranking()
-	fmt.Println(results)
+	//results := l.Ranking()
+	//fmt.Println(results)
+
+	RankPrinter(&l, os.Stdout)
 }
